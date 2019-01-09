@@ -37,8 +37,8 @@ exports.show = (req, res) => {
         return res.status(400).json({error:'Incorrect id'});
     }
 
-    MongoClient.connect(mongo_url, { useNewUrlParser: true }).
-        then(client => {
+    MongoClient.connect(mongo_url, { useNewUrlParser: true })
+        .then(client => {
             const db = client.db('my-db');
             const collection = db.collection('post');
             collection.find({"id" : id}).toArray()
@@ -53,13 +53,19 @@ exports.destroy = (req, res) => {
         return res.status(400).json({error: 'Incorrect id'});
     }
 
-    const userIdx = users.findIndex(user => user.id === id);
-    if (userIdx === -1) {
-        return res.status(404).json({error: 'Unknown user'});
-    }
-
-    users.splice(userIdx, 1);
-    res.status(204).send();
+    MongoClient.connect(mongo_url, { useNewUrlParser: true })
+        .then(client => {
+            const  db = client.db('my-db');
+            const  collection = db.collection('post');
+            collection.deleteOne({"id" : id }).then(res.status(204).send())
+        }).catch(error => console.error(error))
+    // const userIdx = users.findIndex(user => user.id === id);
+    // if (userIdx === -1) {
+    //     return res.status(404).json({error: 'Unknown user'});
+    // }
+    //
+    // users.splice(userIdx, 1);
+    // res.status(204).send();
 };
 
 exports.create = (req, res) => {
